@@ -28,6 +28,21 @@ app.get('/api/bookings', async (req, res) => {
   }
 });
 
+//API endpoint to fetch booking by id
+app.get('/api/bookings/:id', async (req,res) => {
+  const bookingId = req.params.id;
+  try{
+    const [rows] = await pool.query('SELECT * FROM bookings WHERE id = ?', [bookingId]);
+    if(rows.length === 0){
+      return res.status(404).send('Booking not found')
+    }
+    res.status(200).json(rows[0]);
+  }catch(error){
+    console.error('Error fetching bookings:', error);
+    res.status(500).send('Internal Server Error');
+  }
+})
+
 // API endpoint to insert a booking
 app.post('/api/bookings', async (req, res) => {
   const { service, doctor_name, start_time, end_time, date } = req.body;
